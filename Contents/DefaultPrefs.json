@@ -1,0 +1,8 @@
+[
+    {
+        "id": "hideAdultContent",
+        "label": "Kontrola rodzicielska",
+        "type": "bool",
+        "default": "true"
+    }
+]

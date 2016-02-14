@@ -1,0 +1,7 @@
+{
+    "NAME": "Telewizjada",
+    "MENU_ALL_CHANNELS": "All channels",
+    "MESSAGE_ALL": "All",
+    "STRING_SETTINGS": "Settings",
+    "ERROR_NO_CHANNELS": "No channels found! Server might be down. Please try again later in few minutes..."
+}
