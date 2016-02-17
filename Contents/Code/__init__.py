@@ -14,16 +14,16 @@ NAME = L('NAME')
 HOST = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:19.0) Gecko/20121213 Firefox/19.0'
 
 def Start():
-    Plugin.AddPrefixHandler(PREFIX,MainMenu,NAME,ICON,ART)
-    Plugin.AddViewGroup("List", viewMode = "List", mediaType = "items")
     Plugin.AddViewGroup('Details', viewMode='InfoList', mediaType='items')
+    Plugin.AddViewGroup("List", viewMode = "List", mediaType = "items")
     ObjectContainer.art = R(ART)
     ObjectContainer.title1 = NAME
     ObjectContainer.view_group = "List"
     DirectoryObject.thumb = R(ICON)
     HTTP.User_Agent = HOST
 
-@handler(PREFIX, NAME)
+
+@handler(PREFIX, NAME, ICON, ART)
 def MainMenu():
     oc = ObjectContainer()
     oc.no_cache = True
