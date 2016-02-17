@@ -30,6 +30,7 @@ def MainMenu():
     data = GetDataFromApi()
 
     oc.add(DirectoryObject(key=Callback(GetChannels,category='all'),title=L('MENU_ALL_CHANNELS')))
+    oc.add(DirectoryObject(key=Callback(GetChannels,category='online'),title=L('MENU_ONLINE_CHANNELS')))
     for category in data['categories']:
         # Log(category)
         if not (category['Categoryid'] == 8 and Prefs['hideAdultContent']):
@@ -49,6 +50,12 @@ def GetChannels(category):
         Log('Getting all channels')
         channels = data['channels']
         oc.title2 = L('MENU_ALL_CHANNELS')
+    elif category == 'online':
+        Log('Getting online channels')
+        for channel in data['channels']:
+            if channel['online']:
+                channels.append(channel)
+        oc.title2 = L('MENU_ONLINE_CHANNELS')
     else:
         for cat in data['categories']:
             if cat['Categoryid'] == int(category):
@@ -59,11 +66,12 @@ def GetChannels(category):
 
     if channels:
         for channel in channels:
-            if not (Prefs['hideAdultContent'] and channel['isAdult'] == 1):
+            if not (Prefs['hideAdultContent'] and channel['isAdult']):
                 oc.add(
                     VideoClipObject(
                         key=Callback(GetChannel,cid=channel['id']),
-                        title=channel['displayName'],
+                        title=channel['displayName'] if channel['online'] else "[OFFLINE] " + channel['displayName'],
+                        summary = 'ONLINE' if channel['online'] else 'OFFLINE',
                         rating_key=channel['name'],
                         thumb=main_url + channel['bigThumb']
                     )
@@ -78,27 +86,30 @@ def GetChannel(cid, container = True):
 
     channel = GetChannelFromApi(cid)
 
-    media = VideoClipObject(
-        key = Callback(GetChannel, cid=cid, container=True),
-        rating_key = channel['name'],
-        title = channel['displayName'],
-        thumb = main_url + channel['bigThumb'],
-        items = [
-            MediaObject(
-                # container = Container.MP4,     # MP4, MKV, MOV, AVI
-                # video_codec = VideoCodec.H264, # H264
-                # audio_codec = AudioCodec.AAC,  # ACC, MP3
-                video_resolution = 576,
-                optimized_for_streaming = True,
-                parts = GetStreams(channel)
-            )
-        ]
-    )
+    if channel['online']:
+        media = VideoClipObject(
+            key = Callback(GetChannel, cid=cid, container=True),
+            rating_key = channel['name'],
+            title = channel['displayName'],
+            thumb = main_url + channel['bigThumb'],
+            items = [
+                MediaObject(
+                    # container = Container.MP4,     # MP4, MKV, MOV, AVI
+                    # video_codec = VideoCodec.H264, # H264
+                    # audio_codec = AudioCodec.AAC,  # ACC, MP3
+                    video_resolution = 576,
+                    optimized_for_streaming = True,
+                    parts = GetStreams(channel)
+                )
+            ]
+        )
 
-    if container:
-        return ObjectContainer(objects=[media],no_cache=True)
+        if container:
+            return ObjectContainer(objects=[media],no_cache=True)
+        else:
+            return media
     else:
-        return media
+        return MessageContainer('ERROR',str(L("ERROR_CHANNEL_OFFLINE")).format(channel['displayName']))
 
 
 def GetDataFromApi():
@@ -181,3 +192,6 @@ def GetCookies(channel_url):
         Log('Failed to get cookies from url={}, post={}'.format(url,params))
         Log('API error: {}'.format(err))
 
+
+def ChannelOffline(channel_name):
+    return ObjectContainer(header="Empty",message=str(L("ERROR_CHANNEL_OFFLINE")).format(channel_name))

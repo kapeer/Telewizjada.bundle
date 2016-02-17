@@ -1,7 +1,9 @@
 {
     "NAME": "Telewizjada",
     "MENU_ALL_CHANNELS": "Wszystkie kanały",
+    "MENU_ONLINE_CHANNELS": "Kanały online",
     "MESSAGE_ALL": "Wszystkie",
     "STRING_SETTINGS": "Ustawienia",
-    "ERROR_NO_CHANNELS": "Nie znaleziono kanałów! Serwer może być niedostępny. Spróbuj ponownie za kilka minut..."
+    "ERROR_NO_CHANNELS": "Nie znaleziono kanałów! Serwer może być niedostępny. Spróbuj ponownie za kilka minut...",
+    "ERROR_CHANNEL_OFFLINE": "{} jest niedostępny"
 }
