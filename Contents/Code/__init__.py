@@ -14,8 +14,8 @@ NAME = L('NAME')
 HOST = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:19.0) Gecko/20121213 Firefox/19.0'
 
 def Start():
-    Plugin.AddViewGroup('Details', viewMode='InfoList', mediaType='items')
-    Plugin.AddViewGroup("List", viewMode = "List", mediaType = "items")
+    Plugin.AddViewGroup("Details", viewMode="InfoList")
+    Plugin.AddViewGroup("List", viewMode = "List")
     ObjectContainer.art = R(ART)
     ObjectContainer.title1 = NAME
     ObjectContainer.view_group = "List"
@@ -72,8 +72,8 @@ def GetChannels(category):
                         key=Callback(GetChannel,cid=channel['id']),
                         title=channel['displayName'] if channel['online'] else "[OFFLINE] " + channel['displayName'],
                         summary = 'ONLINE' if channel['online'] else 'OFFLINE',
-                        rating_key=channel['name'],
-                        thumb=main_url + channel['bigThumb']
+                        rating_key=channel['displayName'],
+                        thumb=main_url + channel['thumb']
                     )
                 )
         return oc

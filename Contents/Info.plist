@@ -10,7 +10,5 @@
     <string>*</string>
     <key>PlexPluginClass</key>
     <string>Content</string>
-    <key>PlexPluginMode</key>
-    <string>AlwaysOn</string>
 </dict>
 </plist>
