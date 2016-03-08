@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
-import re, urllib, urllib2
+import re, urllib, urllib2, datetime
 
 main_url = 'http://www.telewizjada.net'
 get_channels = 'get_channels.php'
 get_channel = 'get_mainchannel.php'
+get_epg = 'get_epg.php'
 get_channel_url = 'get_channel_url.php'
 set_cookie = 'set_cookie.php'
 
@@ -85,6 +86,16 @@ def GetChannels(category):
 def GetChannel(cid, container = True):
 
     channel = GetChannelFromApi(cid)
+    epg = GetEpgFromApi(channel['name'].replace('2014tv',''))
+
+    summary = ''
+    for program in epg:
+        start_time = datetime.datetime.fromtimestamp(int(program['starttime'])).strftime('%H:%M')
+        end_time = datetime.datetime.fromtimestamp(int(program['endtime'])).strftime('%H:%M')
+        if epg.index(program) == 0:
+            summary = '{}{} - {}: {}\r{}\n'.format(summary, start_time, end_time, program['title'],program['description'])
+        else:
+            summary = '{}{} - {}: {}\r'.format(summary, start_time, end_time, program['title'])
 
     if channel['online']:
         media = VideoClipObject(
@@ -92,6 +103,7 @@ def GetChannel(cid, container = True):
             rating_key = channel['name'],
             title = channel['displayName'],
             thumb = main_url + channel['bigThumb'],
+            summary = summary,
             items = [
                 MediaObject(
                     # container = Container.MP4,     # MP4, MKV, MOV, AVI
@@ -134,6 +146,17 @@ def GetChannelFromApi(cid):
     else:
         return data
 
+
+def GetEpgFromApi(channel_name):
+    url = '{}/{}'.format(main_url,get_epg)
+    params = {'channelname': channel_name, 'offset': Prefs['epgOffset']}
+    try:
+        data = JSON.ObjectFromURL(url=url,values=params,cacheTime=0)
+    except Exception, err:
+        Log('Failed to get epg data from url={}, post={}'.format(url,params))
+        Log('API error: {}'.format(err))
+    else:
+        return data
 
 def GetVideoURLFromApi(cid, cookies):
     url = '{}/{}'.format(main_url,get_channel_url)
